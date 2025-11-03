@@ -1,0 +1,2 @@
+This is a test document for Qwen multimodal testing.
+It contains some sample text.

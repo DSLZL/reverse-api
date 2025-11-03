@@ -1,0 +1,101 @@
+[package]
+name = "reverse_api"
+version = "0.1.0"
+edition = "2021"
+authors = ["mm"]
+description = "A unified reverse API wrapper written in Rust"
+
+[[bin]]
+name = "api_server"
+path = "src/bin/api_server.rs"
+
+[[example]]
+name = "grok_example"
+path = "examples/grok_example.rs"
+
+[[example]]
+name = "chatgpt_example"
+path = "examples/chatgpt_example.rs"
+
+[[example]]
+name = "deepseek_example"
+path = "examples/deepseek_example.rs"
+
+[dependencies]
+# HTTP client with browser impersonation (replaces reqwest)
+rquest = { version = "5.1.0", features = ["json", "cookies", "stream", "multipart", "charset"] }
+rquest-util = "2.2.1"
+# Async runtime
+tokio = { version = "1.48.0", features = ["full"] }
+tokio-stream = "0.1.17"
+# Serialization
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+# Web framework
+axum = { version = "0.8.6", features = ["macros", "multipart"] }
+tower = "0.5.2"
+tower-http = { version = "0.6.6", features = ["trace", "cors"] }
+futures = "0.3.31"
+futures-util = "0.3.31"
+async-stream = "0.3"
+# Crypto
+secp256k1 = { version = "0.28", features = ["rand-std"] }
+sha2 = "0.10"
+hmac = "0.12"
+rand = "0.8.5"
+# Base64
+base64 = "0.22.1"
+# UUID
+uuid = { version = "1.18.1", features = ["v4", "serde"] }
+# HTML parsing
+scraper = "0.24.0"
+# Regex
+regex = "1.12.2"
+# Logging
+colored = "3.0.0"
+chrono = { version = "0.4.42", features = ["serde"] }
+chrono-tz = "0.10.4"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
+# Error handling
+wasmtime = "38.0.3"
+anyhow = "1.0.100"
+thiserror = "2.0.17"
+# URL parsing
+url = "2.5.7"
+# Hex encoding
+hex = "0.4.3"
+# Image processing
+image = "0.25.8"
+# MIME type detection
+mime_guess = "2.0.5"
+# Global statics
+lazy_static = "1.5.0"
+reqwest-eventsource = "0.6.0"
+# Plain HTTP client for OSS uploads (no browser emulation)
+reqwest = "0.12.24"
+
+[dev-dependencies]
+tokio-test = "0.4.4"
+
+
+
+[[example]]
+name = "qwen_search_example"
+path = "examples/qwen_search_example.rs"
+
+[[example]]
+name = "qwen_thinking_example"
+path = "examples/qwen_thinking_example.rs"
+
+[[example]]
+name = "qwen_advanced_example"
+path = "examples/qwen_advanced_example.rs"
+
+[[example]]
+name = "qwen_model_capabilities"
+path = "examples/qwen_model_capabilities.rs"
+
+[[example]]
+name = "qwen_smart_model_selection"
+path = "examples/qwen_smart_model_selection.rs"
