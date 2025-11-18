@@ -445,13 +445,12 @@ chat('Hello!').then(console.log);
 | XAI | `grok-3-turbo` | Fast text generation | ❌ |
 | XAI | `grok-3-mini` | Lightweight model | ❌ |
 | OpenAI | `chatgpt` | Text generation | ❌ |
-| OpenAI | `gpt-4` | Advanced reasoning | ❌ |
 | DeepSeek | `deepseek-r1` | Reasoning model | ❌ |
 | DeepSeek | `deepseek-chat` | General chat | ❌ |
 | Alibaba | `qwen3-max` | Advanced multimodal | ✅ |
 | Alibaba | `qwen3-plus` | Enhanced model | ✅ |
 | Alibaba | `qwen3-turbo` | Fast model | ✅ |
-| Z.ai | `glm-4.6` | Text generation | ❌ |
+
 
 ### Qwen Multimodal Support
 
@@ -478,8 +477,7 @@ reverse-api/
 │   ├── chatgpt/               # ChatGPT client
 │   ├── grok/                  # Grok client
 │   ├── deepseek/              # DeepSeek client
-│   ├── qwen/                  # Qwen client (multimodal)
-│   └── zto/                   # ZTO client
+│   └── qwen/                  # Qwen client (multimodal)
 ├── examples/                  # Usage examples
 ├── generated/                 # Auto-generated media
 │   ├── images/

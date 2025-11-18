@@ -9,17 +9,6 @@ description = "A unified reverse API wrapper written in Rust"
 name = "api_server"
 path = "src/bin/api_server.rs"
 
-[[example]]
-name = "grok_example"
-path = "examples/grok_example.rs"
-
-[[example]]
-name = "chatgpt_example"
-path = "examples/chatgpt_example.rs"
-
-[[example]]
-name = "deepseek_example"
-path = "examples/deepseek_example.rs"
 
 [dependencies]
 # HTTP client with browser impersonation (replaces reqwest)
@@ -79,6 +68,17 @@ reqwest = "0.12.24"
 tokio-test = "0.4.4"
 
 
+[[example]]
+name = "grok_example"
+path = "examples/grok_example.rs"
+
+[[example]]
+name = "chatgpt_example"
+path = "examples/chatgpt_example.rs"
+
+[[example]]
+name = "deepseek_example"
+path = "examples/deepseek_example.rs"
 
 [[example]]
 name = "qwen_search_example"

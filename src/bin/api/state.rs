@@ -72,11 +72,7 @@ impl AppState {
     }
 
     pub async fn get_qwen_client(&self) -> Option<Arc<reverse_api::QwenClient>> {
-        self.qwen_client
-            .read()
-            .await
-            .as_ref()
-            .map(Arc::clone)
+        self.qwen_client.read().await.as_ref().map(Arc::clone)
     }
 
     pub async fn get_qwen_models(&self) -> Option<Vec<reverse_api::qwen::models::Model>> {

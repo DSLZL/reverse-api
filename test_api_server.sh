@@ -244,39 +244,6 @@ else
     echo "  ⚠️  SKIPPED (no token)"
 fi
 
-# Test 11: Z.ai/GLM
-echo ""
-echo "=== Z.ai Model ==="
-ZTO_THREAD=$(curl -s -X POST "$API_URL/v1/threads" \
-    -H "Content-Type: application/json" \
-    -d '{"model": "glm-4.6"}' | jq -r '.id // empty')
-
-if [ -n "$ZTO_THREAD" ]; then
-    echo "  ✅ Created Z.ai thread"
-    ((PASSED++))
-    
-    # Add message
-    curl -s -X POST "$API_URL/v1/threads/$ZTO_THREAD/messages" \
-        -H "Content-Type: application/json" \
-        -d '{"role": "user", "content": "test"}' > /dev/null
-    
-    # Get response
-    response=$(curl -s -X POST "$API_URL/v1/responses" \
-        -H "Content-Type: application/json" \
-        -d "{\"thread_id\": \"$ZTO_THREAD\", \"model\": \"glm-4.6\"}")
-    
-    if echo "$response" | grep -q "completed"; then
-        echo "  ✅ Z.ai Response PASSED"
-        ((PASSED++))
-    else
-        echo "  ❌ Z.ai Response FAILED"
-        ((FAILED++))
-    fi
-else
-    echo "  ❌ Failed to create Z.ai thread"
-    ((FAILED++))
-fi
-
 # Summary
 echo ""
 echo "================================"

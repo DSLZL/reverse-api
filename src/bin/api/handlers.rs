@@ -272,20 +272,6 @@ pub async fn create_response(
             .ask_question(&message_content)
             .await
             .map_err(|e| ApiError::internal_error(format!("ChatGPT error: {}", e)))?
-    } else if model.starts_with("glm") || model == "zto" {
-        Logger::info(&format!(
-            "Starting Z.ai GLM conversation with model: {}",
-            model
-        ));
-
-        // Create Z.ai client and execute
-        let mut client = reverse_api::ZtoClient::new(proxy_to_use.as_deref())
-            .await
-            .map_err(|e| ApiError::internal_error(format!("ZtoClient error: {}", e)))?;
-        client
-            .ask_question(&message_content)
-            .await
-            .map_err(|e| ApiError::internal_error(format!("Z.ai error: {}", e)))?
     } else if model.starts_with("deepseek") {
         Logger::info("Starting DeepSeek conversation");
 

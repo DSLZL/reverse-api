@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Chat type for different interaction modes
-#[derive(Debug, Clone)]
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub enum ChatType {
     /// Normal text-to-text conversation
     #[default]
@@ -40,7 +39,6 @@ impl ChatType {
         }
     }
 }
-
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Message {
