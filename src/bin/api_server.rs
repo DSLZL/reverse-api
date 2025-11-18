@@ -9,27 +9,20 @@ fn print_usage() {
     println!("Options:");
     println!("  --host <HOST>      Server host (default: 0.0.0.0)");
     println!("  --port <PORT>      Server port (default: 6969)");
-    println!("  --proxy <PROXY>    Default proxy for Grok client (default: http://127.0.0.1:1082)");
-    println!("  --no-proxy         Don't use any default proxy");
     println!("  --help             Show this help message");
     println!();
-    println!("Note: Proxy can also be overridden per-request in the API payload.");
     println!();
     println!("Examples:");
     println!("  api_server");
     println!("  api_server --port 8080");
-    println!("  api_server --proxy http://127.0.0.1:7890");
-    println!("  api_server --no-proxy");
-    println!("  api_server --host 127.0.0.1 --port 8080 --proxy http://localhost:7890");
+    println!("  api_server --host 127.0.0.1 --port 8080");
 }
 
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
-
     let mut host = "0.0.0.0".to_string();
     let mut port = 6969u16;
-    let mut default_proxy = Some("http://127.0.0.1:1082".to_string());
 
     let mut i = 1;
     while i < args.len() {
@@ -62,19 +55,6 @@ async fn main() {
                     std::process::exit(1);
                 }
             }
-            "--proxy" => {
-                if i + 1 < args.len() {
-                    default_proxy = Some(args[i + 1].clone());
-                    i += 2;
-                } else {
-                    Logger::error("--proxy requires a value");
-                    std::process::exit(1);
-                }
-            }
-            "--no-proxy" => {
-                default_proxy = None;
-                i += 1;
-            }
             _ => {
                 Logger::error(&format!("Unknown option: {}", args[i]));
                 println!();
@@ -94,23 +74,12 @@ async fn main() {
         }
     }
 
-    if let Ok(env_proxy) = env::var("DEFAULT_PROXY") {
-        default_proxy = Some(env_proxy);
-    }
-
-    Logger::info("Starting Grok-API Server");
+    Logger::info("Starting Chat2API Server");
     Logger::info("=======================");
     Logger::info(&format!("Host: {}", host));
     Logger::info(&format!("Port: {}", port));
-
-    if let Some(ref proxy) = default_proxy {
-        Logger::info(&format!("Default Proxy: {}", proxy));
-    } else {
-        Logger::info("Default Proxy: None");
-    }
-    Logger::info("Supported Models: Grok (grok-*) and ChatGPT (chatgpt, gpt-*)");
-
-    if let Err(err) = api::server::run(&host, port, default_proxy).await {
+    Logger::info("Supported Models: DeepSeek (deepseek-*) and Qwen (qwen-*)");
+    if let Err(err) = api::server::run(&host, port).await {
         Logger::error(&format!("API server failed: {}", err));
         std::process::exit(1);
     }

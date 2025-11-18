@@ -3,7 +3,7 @@ use axum::{
     response::{IntoResponse, Response as AxumResponse},
     Json,
 };
-use reverse_api::{ChatGptClient, DeepSeekClient, DeepSeekExtraData, Grok, Logger, QwenClient};
+use reverse_api::{DeepSeekClient, DeepSeekExtraData, Logger, QwenClient};
 
 use super::error::ApiError;
 use super::state::AppState;
@@ -23,7 +23,6 @@ pub async fn create_thread(
         .create_thread(
             payload.messages,
             payload.metadata,
-            payload.proxy.as_deref(),
             &payload.model,
         )
         .await?;
@@ -244,44 +243,20 @@ pub async fn create_response(
         return Err(ApiError::bad_request("Last user message content is empty"));
     }
 
-    let proxy_to_use = payload
-        .proxy
-        .or_else(|| thread_state.proxy.clone())
-        .or_else(|| state.get_default_proxy().map(|s| s.to_string()));
 
     let model = thread_state.model.clone();
 
     Logger::info(&format!("Using model: {}", model));
 
     // Determine which client to use based on model name
-    let answer = if model.starts_with("grok") {
-        Logger::info("Starting Grok conversation");
-
-        // Create Grok and execute
-        let mut grok = Grok::new(&model, proxy_to_use.as_deref())?;
-        let result = grok.start_convo(&message_content, None).await?;
-        result
-            .response
-            .unwrap_or_else(|| "No response received".to_string())
-    } else if model.starts_with("chatgpt") || model.starts_with("gpt") {
-        Logger::info("Starting ChatGPT conversation");
-
-        // Create ChatGPT client and execute
-        let mut client = ChatGptClient::new(proxy_to_use.as_deref()).await?;
-        client
-            .ask_question(&message_content)
-            .await
-            .map_err(|e| ApiError::internal_error(format!("ChatGPT error: {}", e)))?
-    } else if model.starts_with("deepseek") {
+    let answer = if model.starts_with("deepseek") {
         Logger::info("Starting DeepSeek conversation");
-
         // Get DeepSeek token from state
         let deepseek_token = state.get_deepseek_token().await.ok_or_else(|| {
             ApiError::bad_request(
                 "DeepSeek token not configured. Please configure it via POST /v1/config/deepseek",
             )
         })?;
-
         // Create DeepSeek client
         let client = DeepSeekClient::new(deepseek_token)
             .await
@@ -436,7 +411,7 @@ pub async fn create_response(
         result.content
     } else {
         return Err(ApiError::bad_request(format!(
-            "Unsupported model: {}. Use 'grok-*', 'chatgpt'/'gpt-*', 'glm-*', 'deepseek-*', or 'qwen-*'",
+            "Unsupported model: {}. Use 'deepseek-*', or 'qwen-*'",
             model
         )));
     };

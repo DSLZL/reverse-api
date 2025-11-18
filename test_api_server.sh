@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# Test Reverse-API Server Endpoints (excluding Grok)
+# Test Reverse-API Server Endpoints
 
 set +e
 
 # Configuration
 API_URL="http://localhost:6969"
-unset http_proxy https_proxy all_proxy
-
 # Load tokens
 DEEPSEEK_TOKEN=$(cat .deepseek_token 2>/dev/null || echo "")
 QWEN_TOKEN=$(cat .qwen_token 2>/dev/null || echo "")
@@ -54,79 +52,8 @@ test_endpoint "Health Check" "GET" "/health" "" "status"
 # Test 2: Models
 test_endpoint "List Models" "GET" "/v1/models" "" "data"
 
-# Test 3: Create Thread (ChatGPT)
-echo ""
-echo "=== Thread Management (ChatGPT) ==="
-THREAD=$(curl -s -X POST "$API_URL/v1/threads" \
-    -H "Content-Type: application/json" \
-    -d '{"model": "chatgpt"}' | jq -r '.id // empty')
 
-if [ -n "$THREAD" ]; then
-    echo "  ✅ Created thread: $THREAD"
-    ((PASSED++))
-    
-    # Test 4: List Threads
-    test_endpoint "List Threads" "GET" "/v1/threads" "" "data"
-    
-    # Test 5: Get Thread
-    response=$(curl -s "$API_URL/v1/threads/$THREAD")
-    if echo "$response" | grep -q "$THREAD"; then
-        echo "  ✅ Get Thread PASSED"
-        ((PASSED++))
-    else
-        echo "  ❌ Get Thread FAILED"
-        ((FAILED++))
-    fi
-else
-    echo "  ❌ Failed to create thread"
-    ((FAILED++))
-fi
-
-# Test 6: Add Message to Thread
-if [ -n "$THREAD" ]; then
-    echo ""
-    echo "=== Message Management ==="
-    response=$(curl -s -X POST "$API_URL/v1/threads/$THREAD/messages" \
-        -H "Content-Type: application/json" \
-        -d '{"role": "user", "content": "hello"}')
-    
-    if echo "$response" | grep -q "thread.message"; then
-        echo "  ✅ Add Message PASSED"
-        ((PASSED++))
-    else
-        echo "  ❌ Add Message FAILED - Response: $(echo $response | head -c 100)"
-        ((FAILED++))
-    fi
-    
-    # Test 7: List Messages
-    response=$(curl -s "$API_URL/v1/threads/$THREAD/messages")
-    if echo "$response" | grep -q "data"; then
-        echo "  ✅ List Messages PASSED"
-        ((PASSED++))
-    else
-        echo "  ❌ List Messages FAILED"
-        ((FAILED++))
-    fi
-fi
-
-# Test 8: Create Response (ChatGPT)
-if [ -n "$THREAD" ]; then
-    echo ""
-    echo "=== Response Generation ==="
-    response=$(curl -s -X POST "$API_URL/v1/responses" \
-        -H "Content-Type: application/json" \
-        -d "{\"thread_id\": \"$THREAD\", \"model\": \"chatgpt\"}")
-    
-    if echo "$response" | grep -q "completed"; then
-        echo "  ✅ ChatGPT Response PASSED"
-        ((PASSED++))
-    else
-        echo "  ⚠️  ChatGPT Response - $(echo $response | head -c 100)"
-        ((FAILED++))
-    fi
-fi
-
-# Test 9: DeepSeek Config and Response
+# Test 3: DeepSeek Config and Response
 if [ -n "$DEEPSEEK_TOKEN" ]; then
     echo ""
     echo "=== DeepSeek Model ==="
@@ -177,7 +104,7 @@ else
     echo "  ⚠️  SKIPPED (no token)"
 fi
 
-# Test 10: Qwen Config and Response
+# Test 4: Qwen Config and Response
 if [ -n "$QWEN_TOKEN" ]; then
     echo ""
     echo "=== Qwen Model ==="

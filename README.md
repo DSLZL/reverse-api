@@ -12,7 +12,6 @@ A unified reverse API wrapper written in Rust that provides seamless access to m
 - **Streaming Responses**: Real-time streaming for better user experience
 - **Media Generation**: Image and video generation capabilities
 - **File Upload**: Support for uploading and processing various file types
-- **Proxy Support**: Configurable proxy settings for network flexibility
 - **Web Dashboard**: Built-in monitoring and statistics dashboard
 - **Thread Management**: Conversation history tracking
 - **Browser Impersonation**: Advanced HTTP client with browser emulation
@@ -21,7 +20,6 @@ A unified reverse API wrapper written in Rust that provides seamless access to m
 
 - **Rust**: 1.70 or higher
 - **Operating System**: Linux, macOS, or Windows
-- **Network**: Internet connection (proxy support available)
 
 ## 🚀 Quick Start
 
@@ -65,16 +63,10 @@ You need to obtain tokens from the services you want to use:
 # Custom port and host
 ./target/release/api_server --host 127.0.0.1 --port 8080
 
-# With proxy
-./target/release/api_server --proxy http://127.0.0.1:7890
-
-# Without proxy
-./target/release/api_server --no-proxy
 
 # Environment variables
 export API_HOST=0.0.0.0
 export API_PORT=6969
-export DEFAULT_PROXY=http://127.0.0.1:1082
 ./target/release/api_server
 ```
 
@@ -112,7 +104,6 @@ GET /health
 ```json
 {
   "status": "ok",
-  "default_proxy": "http://127.0.0.1:1082",
   "active_threads": 5,
   "version": "0.1.0"
 }
@@ -164,7 +155,6 @@ Content-Type: application/json
       "content": "Hello!"
     }
   ],
-  "proxy": "http://proxy:port",  // Optional
   "metadata": {}                  // Optional
 }
 ```
@@ -201,7 +191,6 @@ Content-Type: application/json
   "thread_id": "thread-uuid-123",
   "model": "qwen3-max",
   "file_ids": ["file-uuid-456"],  // Optional, for multimodal
-  "proxy": "http://proxy:port"     // Optional
 }
 ```
 
@@ -441,9 +430,7 @@ chat('Hello!').then(console.log);
 
 | Provider | Model ID | Capabilities | Multimodal |
 |----------|----------|--------------|------------|
-| XAI | `grok-3-auto` | Text generation | ❌ |
-| XAI | `grok-3-turbo` | Fast text generation | ❌ |
-| XAI | `grok-3-mini` | Lightweight model | ❌ |
+| XAI | `grok-auto` | Fast text generation | ❌ |
 | OpenAI | `chatgpt` | Text generation | ❌ |
 | DeepSeek | `deepseek-r1` | Reasoning model | ❌ |
 | DeepSeek | `deepseek-chat` | General chat | ❌ |
@@ -496,8 +483,6 @@ api_server [OPTIONS]
 Options:
   --host <HOST>      Server host (default: 0.0.0.0)
   --port <PORT>      Server port (default: 6969)
-  --proxy <PROXY>    Default proxy (default: http://127.0.0.1:1082)
-  --no-proxy         Don't use any default proxy
   --help             Show help message
 ```
 
@@ -505,7 +490,6 @@ Options:
 
 - `API_HOST`: Server host (default: 0.0.0.0)
 - `API_PORT`: Server port (default: 6969)
-- `DEFAULT_PROXY`: Default proxy URL
 - `DEEPSEEK_TOKEN`: DeepSeek authentication token
 - `QWEN_TOKEN`: Qwen authentication token
 
@@ -542,7 +526,7 @@ QWEN_TOKEN="your_token" cargo run --example qwen_multimodal_example
 # Qwen image generation
 QWEN_TOKEN="your_token" cargo run --example qwen_image_generation_example
 
-# Grok example (requires proxy)
+# Grok example
 cargo run --example grok_example
 ```
 
@@ -566,9 +550,8 @@ The binary will be located at `./target/release/api_server`
 
 If you encounter network issues:
 
-1. **Use a proxy**: Set the `--proxy` flag or `DEFAULT_PROXY` environment variable
-2. **Check firewall**: Ensure your firewall allows outbound connections
-3. **Verify tokens**: Make sure your tokens are valid and not expired
+1. **Check firewall**: Ensure your firewall allows outbound connections
+2. **Verify tokens**: Make sure your tokens are valid and not expired
 
 ### Token Not Working
 
@@ -585,17 +568,6 @@ If port 6969 is already in use:
 api_server --port 8080
 ```
 
-### Proxy Issues
-
-If you have proxy connection issues:
-
-```bash
-# Try without proxy
-api_server --no-proxy
-
-# Or use a different proxy
-api_server --proxy http://127.0.0.1:7890
-```
 
 ### Video Generation Takes Too Long
 

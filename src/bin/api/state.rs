@@ -8,7 +8,6 @@ use tokio::sync::RwLock;
 #[derive(Clone)]
 pub struct AppState {
     threads: Arc<RwLock<HashMap<String, ThreadState>>>,
-    default_proxy: Option<String>,
     stats: StatsCollector,
     deepseek_token: Arc<RwLock<Option<String>>>,
     qwen_token: Arc<RwLock<Option<String>>>,
@@ -22,7 +21,6 @@ pub struct ThreadState {
     pub metadata: Option<serde_json::Value>,
     pub messages: Vec<ThreadMessage>,
     pub model: String,
-    pub proxy: Option<String>,
     pub deepseek_session_id: Option<String>,
     pub deepseek_message_id: Option<String>,
     pub qwen_chat_id: Option<String>,
@@ -30,10 +28,9 @@ pub struct ThreadState {
 }
 
 impl AppState {
-    pub fn new(default_proxy: Option<String>) -> Self {
+    pub fn new() -> Self {
         Self {
             threads: Arc::new(RwLock::new(HashMap::new())),
-            default_proxy,
             stats: StatsCollector::new(),
             deepseek_token: Arc::new(RwLock::new(None)),
             qwen_token: Arc::new(RwLock::new(None)),
@@ -41,10 +38,6 @@ impl AppState {
             uploaded_files: Arc::new(RwLock::new(HashMap::new())),
             qwen_client: Arc::new(RwLock::new(None)),
         }
-    }
-
-    pub fn get_default_proxy(&self) -> Option<&str> {
-        self.default_proxy.as_deref()
     }
 
     pub async fn set_deepseek_token(&self, token: String) {
@@ -135,7 +128,6 @@ impl AppState {
         &self,
         messages: Vec<ThreadMessage>,
         metadata: Option<serde_json::Value>,
-        proxy: Option<&str>,
         model: &str,
     ) -> Result<(String, ThreadState), ApiError> {
         let thread_id = uuid::Uuid::new_v4().to_string();
@@ -144,16 +136,12 @@ impl AppState {
             .unwrap()
             .as_secs();
 
-        let proxy = proxy
-            .map(|s| s.to_string())
-            .or_else(|| self.default_proxy.clone());
 
         let thread_state = ThreadState {
             created_at,
             metadata,
             messages,
             model: model.to_string(),
-            proxy,
             deepseek_session_id: None,
             deepseek_message_id: None,
             qwen_chat_id: None,
@@ -248,7 +236,6 @@ impl Clone for ThreadState {
             metadata: self.metadata.clone(),
             messages: self.messages.clone(),
             model: self.model.clone(),
-            proxy: self.proxy.clone(),
             deepseek_session_id: self.deepseek_session_id.clone(),
             deepseek_message_id: self.deepseek_message_id.clone(),
             qwen_chat_id: self.qwen_chat_id.clone(),

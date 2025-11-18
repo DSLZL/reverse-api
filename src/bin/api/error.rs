@@ -47,18 +47,6 @@ impl IntoResponse for ApiError {
     }
 }
 
-impl From<reverse_api::GrokError> for ApiError {
-    fn from(err: reverse_api::GrokError) -> Self {
-        Self::internal_error(err.to_string())
-    }
-}
-
-impl From<reverse_api::ChatGptError> for ApiError {
-    fn from(err: reverse_api::ChatGptError) -> Self {
-        Self::internal_error(err.to_string())
-    }
-}
-
 impl From<std::io::Error> for ApiError {
     fn from(err: std::io::Error) -> Self {
         Self::internal_error(err.to_string())

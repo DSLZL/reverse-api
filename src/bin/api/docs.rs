@@ -179,7 +179,7 @@ pub async fn api_docs(State(_state): State<AppState>) -> Html<String> {
     <div class="container">
         <div class="header">
             <h1>🚀 Reverse-API 文档</h1>
-            <p>统一的多模型 AI API 接口（Grok、ChatGPT、DeepSeek、Qwen）</p>
+            <p>统一的多模型 AI API 接口（DeepSeek、Qwen）</p>
         </div>
         
         <div class="toc">
@@ -198,11 +198,8 @@ pub async fn api_docs(State(_state): State<AppState>) -> Html<String> {
             <h2>概述</h2>
             <p>Reverse-API 提供统一的接口来访问多个 AI 模型，包括：</p>
             <ul style="margin-left: 20px; margin-top: 10px;">
-                <li><strong>Grok</strong>：XAI 的 Grok 模型系列</li>
-                <li><strong>ChatGPT</strong>：OpenAI 的 GPT 模型</li>
                 <li><strong>DeepSeek</strong>：深度求索 DeepSeek 模型</li>
                 <li><strong>Qwen</strong>：阿里巴巴 Qwen 模型（支持多模态）</li>
-                <li><strong>GLM/Z.ai</strong>：智谱清言 GLM 模型</li>
             </ul>
             
             <h3>基础信息</h3>
@@ -249,7 +246,6 @@ pub async fn api_docs(State(_state): State<AppState>) -> Html<String> {
       "content": "Hello!"
     }
   ],
-  "proxy": "http://proxy:port",
   "metadata": {}
 }</div>
                 <h4>响应</h4>
@@ -300,8 +296,7 @@ pub async fn api_docs(State(_state): State<AppState>) -> Html<String> {
                 <p>为线程生成响应</p>
                 <h4>请求体</h4>
                 <div class="code-block">{
-  "thread_id": "thread-123",
-  "proxy": "http://proxy:port"
+  "thread_id": "thread-123"
 }</div>
             </div>
             

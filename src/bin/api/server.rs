@@ -49,11 +49,9 @@ pub fn router(state: AppState) -> Router {
 
 async fn health_check(State(state): State<AppState>) -> impl IntoResponse {
     let threads = state.list_threads().await;
-    let proxy_info = state.get_default_proxy().unwrap_or("none");
 
     Json(serde_json::json!({
         "status": "ok",
-        "default_proxy": proxy_info,
         "active_threads": threads.len(),
         "version": env!("CARGO_PKG_VERSION")
     }))
@@ -61,42 +59,6 @@ async fn health_check(State(state): State<AppState>) -> impl IntoResponse {
 
 async fn list_models(State(state): State<AppState>) -> impl IntoResponse {
     let mut static_models = vec![
-        serde_json::json!({
-            "id": "grok-3-auto",
-            "object": "model",
-            "created": 1677610602,
-            "owned_by": "xai"
-        }),
-        serde_json::json!({
-            "id": "grok-3-turbo",
-            "object": "model",
-            "created": 1677610602,
-            "owned_by": "xai"
-        }),
-        serde_json::json!({
-            "id": "grok-3-mini",
-            "object": "model",
-            "created": 1677610602,
-            "owned_by": "xai"
-        }),
-        serde_json::json!({
-            "id": "chatgpt",
-            "object": "model",
-            "created": 1677610602,
-            "owned_by": "openai"
-        }),
-        serde_json::json!({
-            "id": "gpt-4",
-            "object": "model",
-            "created": 1677610602,
-            "owned_by": "openai"
-        }),
-        serde_json::json!({
-            "id": "glm-4.6",
-            "object": "model",
-            "created": 1677610602,
-            "owned_by": "z.ai"
-        }),
         serde_json::json!({
             "id": "deepseek",
             "object": "model",
@@ -127,11 +89,9 @@ async fn list_models(State(state): State<AppState>) -> impl IntoResponse {
 pub async fn run(
     host: &str,
     port: u16,
-    default_proxy: Option<String>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let addr: SocketAddr = format!("{}:{}", host, port).parse()?;
-
-    let state = AppState::new(default_proxy);
+    let state = AppState::new();
     let app = router(state);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
@@ -145,7 +105,7 @@ pub async fn run(
     Logger::info("  Thread: GET/DELETE /v1/threads/:thread_id");
     Logger::info("  Messages: POST/GET /v1/threads/:thread_id/messages");
     Logger::info(
-        "  Response: POST /v1/responses (supports grok, chatgpt, glm, deepseek, qwen models)",
+        "  Response: POST /v1/responses (supports deepseek, qwen models)",
     );
     Logger::info("  Config DeepSeek: POST /v1/config/deepseek");
     Logger::info("  Config Qwen: POST /v1/config/qwen");

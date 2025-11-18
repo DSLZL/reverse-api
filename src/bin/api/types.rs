@@ -11,8 +11,6 @@ pub struct CreateThreadRequest {
     pub messages: Vec<ThreadMessage>,
     #[serde(default)]
     pub metadata: Option<serde_json::Value>,
-    #[serde(default)]
-    pub proxy: Option<String>,
     #[serde(default = "default_model")]
     pub model: String,
 }
@@ -45,8 +43,6 @@ pub struct CreateResponseRequest {
     #[serde(default)]
     #[allow(dead_code)]
     pub stream: bool,
-    #[serde(default)]
-    pub proxy: Option<String>,
     #[serde(default)]
     pub file_ids: Option<Vec<String>>,
 }
@@ -167,5 +163,5 @@ pub struct ListMessagesResponse {
 }
 
 fn default_model() -> String {
-    "grok-3-auto".to_string()
+    "qwen3-max".to_string()
 }

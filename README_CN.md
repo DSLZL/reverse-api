@@ -65,16 +65,10 @@ cargo build --release
 # 自定义端口和主机
 ./target/release/api_server --host 127.0.0.1 --port 8080
 
-# 使用代理
-./target/release/api_server --proxy http://127.0.0.1:7890
-
-# 不使用代理
-./target/release/api_server --no-proxy
 
 # 使用环境变量
 export API_HOST=0.0.0.0
 export API_PORT=6969
-export DEFAULT_PROXY=http://127.0.0.1:1082
 ./target/release/api_server
 ```
 
@@ -112,7 +106,6 @@ GET /health
 ```json
 {
   "status": "ok",
-  "default_proxy": "http://127.0.0.1:1082",
   "active_threads": 5,
   "version": "0.1.0"
 }
@@ -164,7 +157,6 @@ Content-Type: application/json
       "content": "你好！"
     }
   ],
-  "proxy": "http://proxy:port",  // 可选
   "metadata": {}                  // 可选
 }
 ```
@@ -201,7 +193,6 @@ Content-Type: application/json
   "thread_id": "thread-uuid-123",
   "model": "qwen3-max",
   "file_ids": ["file-uuid-456"],  // 可选，用于多模态
-  "proxy": "http://proxy:port"     // 可选
 }
 ```
 
@@ -495,8 +486,6 @@ api_server [OPTIONS]
 选项：
   --host <HOST>      服务器主机（默认：0.0.0.0）
   --port <PORT>      服务器端口（默认：6969）
-  --proxy <PROXY>    默认代理（默认：http://127.0.0.1:1082）
-  --no-proxy         不使用任何默认代理
   --help             显示帮助信息
 ```
 
@@ -504,7 +493,6 @@ api_server [OPTIONS]
 
 - `API_HOST`：服务器主机（默认：0.0.0.0）
 - `API_PORT`：服务器端口（默认：6969）
-- `DEFAULT_PROXY`：默认代理 URL
 - `DEEPSEEK_TOKEN`：DeepSeek 认证 token
 - `QWEN_TOKEN`：Qwen 认证 token
 
@@ -564,10 +552,8 @@ cargo build --release
 ### 网络连接问题
 
 如果遇到网络问题：
-
-1. **使用代理**：设置 `--proxy` 参数或 `DEFAULT_PROXY` 环境变量
-2. **检查防火墙**：确保防火墙允许出站连接
-3. **验证 token**：确保您的 token 有效且未过期
+1. **检查防火墙**：确保防火墙允许出站连接
+2. **验证 token**：确保您的 token 有效且未过期
 
 ### Token 不工作
 
@@ -584,17 +570,6 @@ cargo build --release
 api_server --port 8080
 ```
 
-### 代理问题
-
-如果遇到代理连接问题：
-
-```bash
-# 尝试不使用代理
-api_server --no-proxy
-
-# 或使用不同的代理
-api_server --proxy http://127.0.0.1:7890
-```
 
 ### 视频生成时间过长
 

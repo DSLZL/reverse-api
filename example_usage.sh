@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # 统一 API 使用示例
-# 启动服务器: export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897 && ./target/release/api_server --proxy http://127.0.0.1:7897
+# 启动服务器: ./target/release/api_server 
 
 API_URL="http://localhost:6969"
-unset http_proxy https_proxy all_proxy
+
 
 echo "=================================================="
 echo "统一逆向 API 使用示例"
