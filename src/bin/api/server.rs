@@ -32,7 +32,6 @@ pub fn router(state: AppState) -> Router {
         .route("/v1/threads/{thread_id}", get(handlers::get_thread))
         .route("/v1/threads/{thread_id}", delete(handlers::delete_thread))
         .route("/v1/responses", post(handlers::create_response))
-        .route("/v1/config/deepseek", post(handlers::configure_deepseek))
         .route("/v1/config/qwen", post(handlers::configure_qwen))
         .route("/v1/files/upload", post(handlers::upload_file_for_qwen))
         .route("/v1/images/generate", post(handlers::generate_image))
@@ -105,9 +104,8 @@ pub async fn run(
     Logger::info("  Thread: GET/DELETE /v1/threads/:thread_id");
     Logger::info("  Messages: POST/GET /v1/threads/:thread_id/messages");
     Logger::info(
-        "  Response: POST /v1/responses (supports deepseek, qwen models)",
+        "  Response: POST /v1/responses (supports qwen models)",
     );
-    Logger::info("  Config DeepSeek: POST /v1/config/deepseek");
     Logger::info("  Config Qwen: POST /v1/config/qwen");
     Logger::info("  Dashboard: GET /dashboard");
     Logger::info("  Dashboard Stats: GET /dashboard/stats");

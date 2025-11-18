@@ -31,24 +31,7 @@ if [ -n "$QWEN_TOKEN" ]; then
 fi
 echo ""
 
-# 示例 1: DeepSeek 对话
-echo "=== 示例 1: DeepSeek 对话 ==="
-THREAD=$(curl -s -X POST "$API_URL/v1/threads" \
-    -H "Content-Type: application/json" \
-    -d '{"model": "deepseek-r1"}' | jq -r '.id')
-
-curl -s -X POST "$API_URL/v1/threads/$THREAD/messages" \
-    -H "Content-Type: application/json" \
-    -d '{"role": "user", "content": "用一句话解释量子计算"}' > /dev/null
-
-echo "问题: 用一句话解释量子计算"
-echo "回答:"
-curl -s -X POST "$API_URL/v1/responses" \
-    -H "Content-Type: application/json" \
-    -d "{\"thread_id\": \"$THREAD\", \"model\": \"deepseek-r1\"}" | jq -r '.response'
-echo ""
-
-# 示例 2: Qwen 对话
+# 示例 1: Qwen 对话
 echo "=== 示例 2: Qwen 对话 ==="
 THREAD=$(curl -s -X POST "$API_URL/v1/threads" \
     -H "Content-Type: application/json" \
@@ -87,8 +70,8 @@ if [ -f "test_image.jpg" ]; then
     echo ""
 fi
 
-# 示例 4: Qwen 图片生成（自动下载）
-echo "=== 示例 4: Qwen 图片生成（自动下载） ==="
+# 示例 2: Qwen 图片生成（自动下载）
+echo "=== 示例 2: Qwen 图片生成（自动下载） ==="
 echo "提示词: 一只可爱的橙色小猫"
 IMAGE_RESULT=$(curl -s -X POST "$API_URL/v1/images/generate" \
     -H "Content-Type: application/json" \
@@ -103,8 +86,8 @@ if [ "$LOCAL_PATH" != "null" ]; then
 fi
 echo ""
 
-# 示例 5: Qwen 视频生成（自动下载）
-echo "=== 示例 5: Qwen 视频生成（自动下载） ==="
+# 示例 3: Qwen 视频生成（自动下载）
+echo "=== 示例 3: Qwen 视频生成（自动下载） ==="
 echo "提示词: 一只小猫在草地上玩耍"
 echo "⏳ 视频生成需要 1-3 分钟，请稍候..."
 VIDEO_RESULT=$(curl -s -X POST "$API_URL/v1/videos/generate" \
@@ -120,8 +103,8 @@ if [ "$LOCAL_PATH" != "null" ]; then
 fi
 echo ""
 
-# 示例 6: 查看可用模型
-echo "=== 示例 6: 查看所有可用模型 ==="
+# 示例 4: 查看可用模型
+echo "=== 示例 4: 查看所有可用模型 ==="
 curl -s "$API_URL/v1/models" | jq -r '.data[] | "  - \(.id) (\(.owned_by))"'
 echo ""
 

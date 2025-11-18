@@ -9,7 +9,6 @@ use tokio::sync::RwLock;
 pub struct AppState {
     threads: Arc<RwLock<HashMap<String, ThreadState>>>,
     stats: StatsCollector,
-    deepseek_token: Arc<RwLock<Option<String>>>,
     qwen_token: Arc<RwLock<Option<String>>>,
     qwen_models: Arc<RwLock<Option<Vec<reverse_api::qwen::models::Model>>>>,
     uploaded_files: Arc<RwLock<HashMap<String, reverse_api::qwen::models::QwenFile>>>,
@@ -32,7 +31,6 @@ impl AppState {
         Self {
             threads: Arc::new(RwLock::new(HashMap::new())),
             stats: StatsCollector::new(),
-            deepseek_token: Arc::new(RwLock::new(None)),
             qwen_token: Arc::new(RwLock::new(None)),
             qwen_models: Arc::new(RwLock::new(None)),
             uploaded_files: Arc::new(RwLock::new(HashMap::new())),
@@ -40,14 +38,6 @@ impl AppState {
         }
     }
 
-    pub async fn set_deepseek_token(&self, token: String) {
-        let mut ds_token = self.deepseek_token.write().await;
-        *ds_token = Some(token);
-    }
-
-    pub async fn get_deepseek_token(&self) -> Option<String> {
-        self.deepseek_token.read().await.clone()
-    }
 
     pub async fn set_qwen_token(&self, token: String) {
         let mut qw_token = self.qwen_token.write().await;
@@ -58,10 +48,6 @@ impl AppState {
             let mut qw_client = self.qwen_client.write().await;
             *qw_client = Some(Arc::new(client));
         }
-    }
-
-    pub async fn get_qwen_token(&self) -> Option<String> {
-        self.qwen_token.read().await.clone()
     }
 
     pub async fn get_qwen_client(&self) -> Option<Arc<reverse_api::QwenClient>> {

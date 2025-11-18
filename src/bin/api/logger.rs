@@ -28,8 +28,6 @@ pub struct Logger {
     metrics: Arc<RwLock<std::collections::HashMap<String, PerformanceMetric>>>,
 }
 
-const MAX_LOGS: usize = 1000;
-
 impl Logger {
     pub fn new() -> Self {
         Self {
@@ -51,9 +49,6 @@ impl Logger {
 
         let mut logs = self.logs.write().await;
         logs.push(entry);
-        if logs.len() > MAX_LOGS {
-            logs.remove(0);
-        }
     }
 
     pub async fn get_logs(&self) -> Vec<LogEntry> {

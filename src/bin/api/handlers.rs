@@ -3,7 +3,7 @@ use axum::{
     response::{IntoResponse, Response as AxumResponse},
     Json,
 };
-use reverse_api::{DeepSeekClient, DeepSeekExtraData, Logger, QwenClient};
+use reverse_api::{Logger, QwenClient};
 
 use super::error::ApiError;
 use super::state::AppState;
@@ -170,22 +170,6 @@ pub async fn list_messages(
     Ok(Json(response).into_response())
 }
 
-pub async fn configure_deepseek(
-    State(state): State<AppState>,
-    Json(payload): Json<serde_json::Value>,
-) -> std::result::Result<AxumResponse, ApiError> {
-    let token = payload["token"]
-        .as_str()
-        .ok_or_else(|| ApiError::bad_request("Missing 'token' field"))?;
-
-    state.set_deepseek_token(token.to_string()).await;
-
-    Ok(Json(serde_json::json!({
-        "status": "success",
-        "message": "DeepSeek token configured"
-    }))
-    .into_response())
-}
 
 pub async fn configure_qwen(
     State(state): State<AppState>,
@@ -249,49 +233,7 @@ pub async fn create_response(
     Logger::info(&format!("Using model: {}", model));
 
     // Determine which client to use based on model name
-    let answer = if model.starts_with("deepseek") {
-        Logger::info("Starting DeepSeek conversation");
-        // Get DeepSeek token from state
-        let deepseek_token = state.get_deepseek_token().await.ok_or_else(|| {
-            ApiError::bad_request(
-                "DeepSeek token not configured. Please configure it via POST /v1/config/deepseek",
-            )
-        })?;
-        // Create DeepSeek client
-        let client = DeepSeekClient::new(deepseek_token)
-            .await
-            .map_err(|e| ApiError::internal_error(format!("DeepSeek client error: {}", e)))?;
-
-        // Check if there's existing session data for continuous conversation
-        let extra_data = if let (Some(session_id), Some(message_id)) = (
-            &thread_state.deepseek_session_id,
-            &thread_state.deepseek_message_id,
-        ) {
-            Logger::info(&format!(
-                "Continuing DeepSeek conversation (session: {}, message: {})",
-                session_id, message_id
-            ));
-            Some(DeepSeekExtraData {
-                session_id: session_id.clone(),
-                message_id: message_id.clone(),
-            })
-        } else {
-            Logger::info("Starting new DeepSeek conversation");
-            None
-        };
-
-        // Execute the conversation
-        let result = client
-            .start_convo(&message_content, extra_data.as_ref())
-            .await
-            .map_err(|e| ApiError::internal_error(format!("DeepSeek error: {}", e)))?;
-
-        // Update thread state with new session data for next conversation
-        thread_state.deepseek_session_id = Some(result.extra_data.session_id);
-        thread_state.deepseek_message_id = Some(result.extra_data.message_id);
-
-        result.response.unwrap_or_default()
-    } else if model.starts_with("qwen") {
+    let answer = if model.starts_with("qwen") {
         Logger::info("Starting Qwen conversation");
 
         // Get cached Qwen client from state (reuse same instance for continuous conversation)
@@ -300,7 +242,6 @@ pub async fn create_response(
                 "Qwen token not configured. Please configure it via POST /v1/config/qwen",
             )
         })?;
-
         // Check for special instructions
         let use_search = payload
             .instructions
@@ -411,7 +352,7 @@ pub async fn create_response(
         result.content
     } else {
         return Err(ApiError::bad_request(format!(
-            "Unsupported model: {}. Use 'deepseek-*', or 'qwen-*'",
+            "Unsupported model: {}. Use 'qwen-*'",
             model
         )));
     };

@@ -78,7 +78,7 @@ async fn main() {
     Logger::info("=======================");
     Logger::info(&format!("Host: {}", host));
     Logger::info(&format!("Port: {}", port));
-    Logger::info("Supported Models: DeepSeek (deepseek-*) and Qwen (qwen-*)");
+    Logger::info("Supported Models: Qwen (qwen-*)");
     if let Err(err) = api::server::run(&host, port).await {
         Logger::error(&format!("API server failed: {}", err));
         std::process::exit(1);

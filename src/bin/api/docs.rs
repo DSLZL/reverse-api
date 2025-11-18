@@ -185,8 +185,6 @@ pub async fn api_docs(State(_state): State<AppState>) -> Html<String> {
         <div class="toc">
             <h3>目录</h3>
             <ul>
-                <li><a href="section-overview">概述</a></li>
-                <li><a href="section-auth">身份验证</a></li>
                 <li><a href="section-endpoints">API 端点</a></li>
                 <li><a href="section-monitoring">监控和统计</a></li>
                 <li><a href="section-examples">使用示例</a></li>
@@ -198,7 +196,6 @@ pub async fn api_docs(State(_state): State<AppState>) -> Html<String> {
             <h2>概述</h2>
             <p>Reverse-API 提供统一的接口来访问多个 AI 模型，包括：</p>
             <ul style="margin-left: 20px; margin-top: 10px;">
-                <li><strong>DeepSeek</strong>：深度求索 DeepSeek 模型</li>
                 <li><strong>Qwen</strong>：阿里巴巴 Qwen 模型（支持多模态）</li>
             </ul>
             

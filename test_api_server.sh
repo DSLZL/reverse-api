@@ -7,7 +7,6 @@ set +e
 # Configuration
 API_URL="http://localhost:6969"
 # Load tokens
-DEEPSEEK_TOKEN=$(cat .deepseek_token 2>/dev/null || echo "")
 QWEN_TOKEN=$(cat .qwen_token 2>/dev/null || echo "")
 
 echo "🚀 Testing Reverse-API Server Endpoints"
@@ -53,58 +52,7 @@ test_endpoint "Health Check" "GET" "/health" "" "status"
 test_endpoint "List Models" "GET" "/v1/models" "" "data"
 
 
-# Test 3: DeepSeek Config and Response
-if [ -n "$DEEPSEEK_TOKEN" ]; then
-    echo ""
-    echo "=== DeepSeek Model ==="
-    
-    # Configure DeepSeek
-    response=$(curl -s -X POST "$API_URL/v1/config/deepseek" \
-        -H "Content-Type: application/json" \
-        -d "{\"token\": \"$DEEPSEEK_TOKEN\"}")
-    
-    if echo "$response" | grep -q "success"; then
-        echo "  ✅ DeepSeek Config PASSED"
-        ((PASSED++))
-        
-        # Create DeepSeek thread
-        DS_THREAD=$(curl -s -X POST "$API_URL/v1/threads" \
-            -H "Content-Type: application/json" \
-            -d '{"model": "deepseek-r1"}' | jq -r '.id // empty')
-        
-        if [ -n "$DS_THREAD" ]; then
-            echo "  ✅ Created DeepSeek thread"
-            ((PASSED++))
-            
-            # Add message
-            curl -s -X POST "$API_URL/v1/threads/$DS_THREAD/messages" \
-                -H "Content-Type: application/json" \
-                -d '{"role": "user", "content": "test"}' > /dev/null
-            
-            # Get response
-            response=$(curl -s -X POST "$API_URL/v1/responses" \
-                -H "Content-Type: application/json" \
-                -d "{\"thread_id\": \"$DS_THREAD\", \"model\": \"deepseek-r1\"}")
-            
-            if echo "$response" | grep -q "completed"; then
-                echo "  ✅ DeepSeek Response PASSED"
-                ((PASSED++))
-            else
-                echo "  ❌ DeepSeek Response FAILED"
-                ((FAILED++))
-            fi
-        fi
-    else
-        echo "  ❌ DeepSeek Config FAILED"
-        ((FAILED++))
-    fi
-else
-    echo ""
-    echo "=== DeepSeek Model ==="
-    echo "  ⚠️  SKIPPED (no token)"
-fi
-
-# Test 4: Qwen Config and Response
+# Test 3: Qwen Config and Response
 if [ -n "$QWEN_TOKEN" ]; then
     echo ""
     echo "=== Qwen Model ==="

@@ -18,7 +18,6 @@ impl ApiError {
             message: msg.into(),
         }
     }
-
     pub fn internal_error(msg: impl Into<String>) -> Self {
         Self {
             status: StatusCode::INTERNAL_SERVER_ERROR,
